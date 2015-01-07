@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Docker | Blog about things]]></title>
   <link href="http://mfrasier.github.io/blog/categories/docker/atom.xml" rel="self"/>
   <link href="http://mfrasier.github.io/"/>
-  <updated>2015-01-07T07:48:43-05:00</updated>
+  <updated>2015-01-07T08:19:09-05:00</updated>
   <id>http://mfrasier.github.io/</id>
   <author>
     <name><![CDATA[Marty Frasier]]></name>
@@ -22,7 +22,7 @@
 
 <p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
 
-<p>First, let&rsquo;s create our CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.</p>
+<p>First, let&rsquo;s create a CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.  I also updated the AMI for us-east-1, where I&rsquo;m deploying this cluster, to the most recent stable version of CoreOS.</p>
 
 <!-- more -->
 
@@ -280,9 +280,11 @@
 </span><span class='line'><span class="err">}</span>
 </span></code></pre></td></tr></table></div></figure></p>
 
-<p>The AMIs in RegionMap are CoreOS amis.  The most interesting part is probably the UserData value for the CoreOSServerLaunchConfig resource, which configures the etcd service and ensures the etcd and fleet services are started at boot time.  We&rsquo;ll get back to those later.</p>
+<p>The most interesting part is probably the UserData value for the CoreOSServerLaunchConfig resource, which configures the etcd service and ensures the etcd and fleet services are started at boot time.  We&rsquo;ll get back to those later.</p>
 
-<p>aws cli cloudformation create-stack can accept JSON-formatted command specification.  It has a template generator command switch &ndash;generate-cli-skeleton, which will generate a skeleton.  I saved the output as a file and modified it to my needs.  I got a new unique etcd DiscoveryURL from <a href="https://discovery.etcd.io/new.">https://discovery.etcd.io/new.</a></p>
+<p><code>aws cli cloudformation create-stack</code> can accept JSON-formatted command specification.  It has a template generator command switch <code>&ndash;generate-cli-skeleton</code>, which will generate an empty json file template with parameter placeholders.  It contains some mutually exclusive keys so you&rsquo;ll need to remove some keys.</p>
+
+<p>I ran the command, saved the output as a file, and modified it to my needs. I populated the DiscveryURL parameter with a new unique key from from <a href="https://discovery.etcd.io/new.">https://discovery.etcd.io/new.</a></p>
 
 <p><figure class='code'><figcaption><span>aws-cfn-cli-skeleton.json </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -351,7 +353,7 @@
 </span><span class='line'>        <span class="p">}</span><span class="err">,</span>
 </span><span class='line'>        <span class="p">{</span>
 </span><span class='line'>            <span class="err">&amp;ldquo;ParameterKey&amp;rdquo;:</span> <span class="err">&amp;ldquo;DiscoveryURL&amp;rdquo;,</span>
-</span><span class='line'>            <span class="err">&amp;ldquo;ParameterValue&amp;rdquo;:</span> <span class="err">&amp;ldquo;&lt;a</span> <span class="err">href=</span><span class="nt">&quot;https://discovery.etcd.io/87a8b544cf56bf7436d601273c1d22d8&quot;</span><span class="err">&gt;https</span><span class="p">:</span><span class="err">//discovery.etcd.io/</span><span class="mi">87</span><span class="err">a</span><span class="mi">8</span><span class="err">b</span><span class="mi">544</span><span class="err">cf</span><span class="mi">56</span><span class="err">bf</span><span class="mi">7436</span><span class="err">d</span><span class="mi">601273</span><span class="err">c</span><span class="mi">1</span><span class="err">d</span><span class="mi">22</span><span class="err">d</span><span class="mi">8</span><span class="err">&lt;/a&gt;&amp;rdquo;</span>
+</span><span class='line'>            <span class="err">&amp;ldquo;ParameterValue&amp;rdquo;:</span> <span class="err">&amp;ldquo;&lt;a</span> <span class="err">href=</span><span class="nt">&quot;https://discovery.etcd.io/87a8b544cf5hhf7436d601273c1d22d8&quot;</span><span class="err">&gt;https</span><span class="p">:</span><span class="err">//discovery.etcd.io/</span><span class="mi">87</span><span class="err">a</span><span class="mi">8</span><span class="err">b</span><span class="mi">544</span><span class="err">cf</span><span class="mi">5</span><span class="err">hhf</span><span class="mi">7436</span><span class="err">d</span><span class="mi">601273</span><span class="err">c</span><span class="mi">1</span><span class="err">d</span><span class="mi">22</span><span class="err">d</span><span class="mi">8</span><span class="err">&lt;/a&gt;&amp;rdquo;</span>
 </span><span class='line'>        <span class="p">}</span><span class="err">,</span>
 </span><span class='line'>        <span class="p">{</span>
 </span><span class='line'>            <span class="err">&amp;ldquo;ParameterKey&amp;rdquo;:</span> <span class="err">&amp;ldquo;KeyPair&amp;rdquo;,</span>
@@ -405,7 +407,9 @@ ssh -A core@&lt;public-ip-address-2&gt;
 ssh -A core@&lt;public-ip-address-3&gt;
 </code></pre>
 
-<h3>check status of etcd service</h3>
+<p>The username is core.  You obviously need to allow SSH traffic into your new instances from you management workstation using the AWS security group rules.</p>
+
+<h4>check status of etcd service</h4>
 
 <p>Be sure to allow the instances to chat with each other on TCP ports 4001 and 7001.  At the start of the output below I hadn&rsquo;t yet edited my security group to allow that communication.  Once I made the change, one host became the leader and they added peers.</p>
 
@@ -431,9 +435,9 @@ Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.669
 Jan 06 21:37:12 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:12.218 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd: peer added: '50aed17347a1456e85279f8dda41e663'
 </code></pre>
 
-<h3>test etcd distributed key service</h3>
+<h4>test etcd distributed key service</h4>
 
-<p>see <a href="https://coreos.com/docs/quickstart/">https://coreos.com/docs/quickstart/</a> as these steps are basically coped from that.</p>
+<p>see <a href="https://coreos.com/docs/quickstart/">https://coreos.com/docs/quickstart/</a> as these steps are basically copied from that.</p>
 
 <p>Set a key on one host</p>
 
@@ -463,6 +467,8 @@ UNIT    HASH    DSTATE  STATE   TARGET
 </code></pre>
 
 <p>Good, we have some machines but no fleet controlled units yet.  Let&rsquo;s create a service.</p>
+
+<h3>Docker container services</h3>
 
 <h4>Create a docker container nano-service</h4>
 
