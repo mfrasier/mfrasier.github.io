@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Cloud | Blog about things]]></title>
   <link href="http://mfrasier.github.io/blog/categories/cloud/atom.xml" rel="self"/>
   <link href="http://mfrasier.github.io/"/>
-  <updated>2015-01-06T21:32:43-05:00</updated>
+  <updated>2015-01-07T07:48:43-05:00</updated>
   <id>http://mfrasier.github.io/</id>
   <author>
     <name><![CDATA[Marty Frasier]]></name>
@@ -18,7 +18,9 @@
     <link href="http://mfrasier.github.io/blog/2015/01/06/kicking-the-tires-of-coreos/"/>
     <updated>2015-01-06T10:52:05-05:00</updated>
     <id>http://mfrasier.github.io/blog/2015/01/06/kicking-the-tires-of-coreos</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m going to use <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
+    <content type="html"><![CDATA[<p>I&rsquo;m going to try out <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
+
+<p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
 
 <p>First, let&rsquo;s create our CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.</p>
 
