@@ -9,7 +9,7 @@
   <meta name="author" content="Marty Frasier">
 
   
-  <meta name="description" content="We&rsquo;ve decided to use docker containers to package and deploy application components as nano services. This post documents initial &hellip;">
+  <meta name="description" content="I&rsquo;m going to use CoreOS to create a cluster of machines to host an app consisting of docker containers. First, let&rsquo;s create our &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,42 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/06/kicking-the-tires-of-coreos/">Kicking the Tires of coreOS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-06T10:52:05-05:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:52 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;m going to use <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
+
+<p>First, let&rsquo;s create our CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/01/06/kicking-the-tires-of-coreos/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -595,57 +631,6 @@ When you use the API, here are the things you need to know:</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/09/sending-logs-to-centralized-logging-services-s/">Sending Logs to Centralized Logging Services</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-09T11:59:34-04:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:59 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Sending log entries to hosted logging services (from a linux)</h2>
-
-<p>Below are some instructions on forwarding log entries from a server to a centralized logging service.</p>
-
-<p>There are many advantages to such an arrangement, including</p>
-
-<ul>
-<li>access to logs from multiple related services in a single location.</li>
-<li>access control where different groups can see different views.</li>
-<li>search apis - query log records by indexed fields, time ranges, etc.</li>
-<li>built-in reporting, filtering, etc on web pages and queries via API.</li>
-<li>in virtualized and cloud environments where servers may come and go on-demand the log entries are captured even if the server and it&rsquo;s volumes have gone away.</li>
-</ul>
-
-
-<p>Centralized logging services, or Logging as a Service (LaaS), accept streams of log entries over the network, index them, and make them available to you.</p>
-
-<p>We are going to utilize two LaaS providers in these examples: <a href="http://www.loggly.com">Loggly</a> and <a href="http://www.sematext.com/logsene">Logsene</a>.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/09/sending-logs-to-centralized-logging-services-s/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -661,6 +646,10 @@ When you use the API, here are the things you need to know:</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/06/kicking-the-tires-of-coreos/">Kicking the Tires of coreOS</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/03/docker-websocket-chat-sample/">Docker Websocket Chat Sample</a>
       </li>
     
@@ -674,10 +663,6 @@ When you use the API, here are the things you need to know:</p>
     
       <li class="post">
         <a href="/blog/2014/11/05/apache-apollo-start/">Apache Apollo Start</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/11/some-elasticsearch-features/">Some Elasticsearch Features</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Blog about things]]></title>
   <link href="http://mfrasier.github.io/atom.xml" rel="self"/>
   <link href="http://mfrasier.github.io/"/>
-  <updated>2015-01-06T21:17:36-05:00</updated>
+  <updated>2015-01-06T21:32:43-05:00</updated>
   <id>http://mfrasier.github.io/</id>
   <author>
     <name><![CDATA[Marty Frasier]]></name>
@@ -12,6 +12,802 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kicking the Tires of coreOS]]></title>
+    <link href="http://mfrasier.github.io/blog/2015/01/06/kicking-the-tires-of-coreos/"/>
+    <updated>2015-01-06T10:52:05-05:00</updated>
+    <id>http://mfrasier.github.io/blog/2015/01/06/kicking-the-tires-of-coreos</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m going to use <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
+
+<p>First, let&rsquo;s create our CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span>coreos-cloudformation-template.json </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;AWSTemplateFormatVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;2010-09-09&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOS on EC2: http://coreos.com/docs/running-coreos/cloud-providers/ec2/&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;Mappings&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;RegionMap&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nt">&quot;ap-northeast-1&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-ab9fbeaa&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;sa-east-1&quot;</span> <span class="p">:</span>      <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-3169c22c&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;ap-southeast-2&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-a31f7f99&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;ap-southeast-1&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-3e54716c&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;us-east-1&quot;</span> <span class="p">:</span>      <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-b83295d0&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;us-west-2&quot;</span> <span class="p">:</span>      <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-d32462e3&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;us-west-1&quot;</span> <span class="p">:</span>      <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-9b5d53de&quot;</span> <span class="p">},</span>
+</span><span class='line'>          <span class="nt">&quot;eu-west-1&quot;</span> <span class="p">:</span>      <span class="p">{</span> <span class="nt">&quot;AMI&quot;</span> <span class="p">:</span> <span class="s2">&quot;ami-cec912b9&quot;</span> <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;InstanceType&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span> <span class="p">:</span> <span class="s2">&quot;EC2 HVM instance type (m3.medium, etc).&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Default&quot;</span> <span class="p">:</span> <span class="s2">&quot;m3.medium&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;AllowedValues&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;m3.medium&quot;</span><span class="p">,</span> <span class="s2">&quot;m3.large&quot;</span><span class="p">,</span> <span class="s2">&quot;m3.xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;m3.2xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;c3.large&quot;</span><span class="p">,</span><span class="s2">&quot;c3.xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;c3.2xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;c3.4xlarge&quot;</span><span class="p">,</span><span class="s2">&quot;c3.8xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;cc2.8xlarge&quot;</span><span class="p">,</span><span class="s2">&quot;cr1.8xlarge&quot;</span><span class="p">,</span><span class="s2">&quot;hi1.4xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;hs1.8xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;i2.xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;i2.2xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;i2.4xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;i2.8xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;r3.large&quot;</span><span class="p">,</span> <span class="s2">&quot;r3.xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;r3.2xlarge&quot;</span><span class="p">,</span><span class="s2">&quot;r3.4xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;r3.8xlarge&quot;</span><span class="p">,</span> <span class="s2">&quot;t2.micro&quot;</span><span class="p">,</span> <span class="s2">&quot;t2.small&quot;</span><span class="p">,</span> <span class="s2">&quot;t2.medium&quot;</span> <span class="p">],</span>
+</span><span class='line'>      <span class="nt">&quot;ConstraintDescription&quot;</span> <span class="p">:</span> <span class="s2">&quot;Must be a valid EC2 HVM instance type.&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;VPCId&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;ID of VPC hosting cluster&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::EC2::VPC::Id&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;SubnetIdList&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;Comma-separated list of VPC Subnet IDs to place instances&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;List&lt;AWS::EC2::Subnet::Id&gt;&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;ClusterSize&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Default&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;MinValue&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;MaxValue&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of nodes in cluster (3-12).&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Number&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;DiscoveryURL&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;An unique etcd cluster discovery URL. Grab a new token from https://discovery.etcd.io/new&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;AdvertisedIPAddress&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;Use &#39;private&#39; if your etcd cluster is within one region or &#39;public&#39; if it spans regions or cloud providers.&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Default&quot;</span><span class="p">:</span> <span class="s2">&quot;private&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;AllowedValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;private&quot;</span><span class="p">,</span> <span class="s2">&quot;public&quot;</span><span class="p">],</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;AllowSSHFrom&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The net block (CIDR) that SSH is available to.&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Default&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;KeyPair&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Description&quot;</span> <span class="p">:</span> <span class="s2">&quot;The name of an EC2 Key Pair to allow SSH access to the instance.&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;String&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;Resources&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;CoreOSSecurityGroup&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::EC2::SecurityGroup&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;GroupDescription&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOS SecurityGroup&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;SecurityGroupIngress&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>          <span class="p">{</span><span class="nt">&quot;IpProtocol&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="nt">&quot;FromPort&quot;</span><span class="p">:</span> <span class="s2">&quot;22&quot;</span><span class="p">,</span> <span class="nt">&quot;ToPort&quot;</span><span class="p">:</span> <span class="s2">&quot;22&quot;</span><span class="p">,</span> <span class="nt">&quot;CidrIp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;AllowSSHFrom&quot;</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;Ingress4001&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::EC2::SecurityGroupIngress&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;GroupName&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOSSecurityGroup&quot;</span><span class="p">},</span> <span class="nt">&quot;IpProtocol&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="nt">&quot;FromPort&quot;</span><span class="p">:</span> <span class="s2">&quot;4001&quot;</span><span class="p">,</span> <span class="nt">&quot;ToPort&quot;</span><span class="p">:</span> <span class="s2">&quot;4001&quot;</span><span class="p">,</span> <span class="nt">&quot;SourceSecurityGroupId&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nt">&quot;Fn::GetAtt&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;CoreOSSecurityGroup&quot;</span><span class="p">,</span> <span class="s2">&quot;GroupId&quot;</span> <span class="p">]</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;Ingress7001&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::EC2::SecurityGroupIngress&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;GroupName&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOSSecurityGroup&quot;</span><span class="p">},</span> <span class="nt">&quot;IpProtocol&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="nt">&quot;FromPort&quot;</span><span class="p">:</span> <span class="s2">&quot;7001&quot;</span><span class="p">,</span> <span class="nt">&quot;ToPort&quot;</span><span class="p">:</span> <span class="s2">&quot;7001&quot;</span><span class="p">,</span> <span class="nt">&quot;SourceSecurityGroupId&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nt">&quot;Fn::GetAtt&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;CoreOSSecurityGroup&quot;</span><span class="p">,</span> <span class="s2">&quot;GroupId&quot;</span> <span class="p">]</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;CoreOSServerAutoScale&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::AutoScaling::AutoScalingGroup&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;AvailabilityZones&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;AvailabilityZones&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;VPCZoneIdentifier&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;SubnetIdList&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;LaunchConfigurationName&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOSServerLaunchConfig&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;MinSize&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;MaxSize&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;DesiredCapacity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;ClusterSize&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;Tags&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nt">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;Ref&quot;</span> <span class="p">:</span> <span class="s2">&quot;AWS::StackName&quot;</span> <span class="p">},</span> <span class="nt">&quot;PropagateAtLaunch&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;CoreOSServerLaunchConfig&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AWS::AutoScaling::LaunchConfiguration&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;ImageId&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;Fn::FindInMap&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;RegionMap&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nt">&quot;Ref&quot;</span> <span class="p">:</span> <span class="s2">&quot;AWS::Region&quot;</span> <span class="p">},</span> <span class="s2">&quot;AMI&quot;</span> <span class="p">]},</span>
+</span><span class='line'>        <span class="nt">&quot;InstanceType&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;InstanceType&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;KeyName&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;KeyPair&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;SecurityGroups&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;CoreOSSecurityGroup&quot;</span><span class="p">}],</span>
+</span><span class='line'>        <span class="nt">&quot;UserData&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;Fn::Base64&quot;</span><span class="p">:</span>
+</span><span class='line'>          <span class="p">{</span> <span class="nt">&quot;Fn::Join&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="s2">&quot;#cloud-config\n\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;coreos:\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;  etcd:\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;    discovery: &quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;DiscoveryURL&quot;</span> <span class="p">},</span> <span class="s2">&quot;\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;    addr: $&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;AdvertisedIPAddress&quot;</span> <span class="p">},</span> <span class="s2">&quot;_ipv4:4001\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;    peer-addr: $&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nt">&quot;Ref&quot;</span><span class="p">:</span> <span class="s2">&quot;AdvertisedIPAddress&quot;</span> <span class="p">},</span> <span class="s2">&quot;_ipv4:7001\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;  units:\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;    - name: etcd.service\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;      command: start\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;    - name: fleet.service\n&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;      command: start\n&quot;</span>
+</span><span class='line'>            <span class="p">]</span> <span class="p">]</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The AMIs in RegionMap are CoreOS amis.  The most interesting part is probably the UserData value for the CoreOSServerLaunchConfig resource, which configures the etcd service and ensures the etcd and fleet services are started at boot time.  We&rsquo;ll get back to those later.</p>
+
+<p>aws cli cloudformation create-stack can accept JSON-formatted command specification.  It has a template generator command switch &ndash;generate-cli-skeleton, which will generate a skeleton.  I saved the output as a file and modified it to my needs.  I got a new unique etcd DiscoveryURL from <a href="https://discovery.etcd.io/new.">https://discovery.etcd.io/new.</a></p>
+
+<figure class='code'><figcaption><span>aws-cfn-cli-skeleton.json </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;StackName&quot;</span><span class="p">:</span> <span class="s2">&quot;coreos-test&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;Parameters&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;InstanceType&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;t2.small&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;AvailabilityZones&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;us-east-1e&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;SubnetIdList&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;subnet-979a58bc&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;ClusterSize&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;DiscoveryURL&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;https://discovery.etcd.io/87a8b544cf56bf7436d601273c1d22d8&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;KeyPair&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;mfrasier_key&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;AdvertisedIPAddress&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;private&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterKey&quot;</span><span class="p">:</span> <span class="s2">&quot;AllowSSHFrom&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;ParameterValue&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0/0&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>    <span class="nt">&quot;DisableRollback&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;TimeoutInMinutes&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;Tags&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Environment&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>create AWS cloudformation stack</h3>
+
+<p>Create a new stack consisting of three coreOS instances using a command like the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> aws cloudformation create-stack \
+</span><span class='line'>   --cli-input-json file://aws-cfn-cli-skeleton.json \
+</span><span class='line'>   --template-body file://coreos-cloudformation-template.json</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>interact with stack instances</h3>
+
+<h4>start ssh-agent and add private key</h4>
+
+<p>This uses ssh-agent to provide your key when necessary.  The ssh -A comand forwards the agent to the hosts so you can ssh between hosts (fleetctl needs it).  Use the key you specified when creating your instances.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ eval $(ssh-agent)
+</span><span class='line'>Agent pid 8456
+</span><span class='line'>$ ssh-add my_key.pem 
+</span><span class='line'>Identity added: my_key.pem (my_key.pem)</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>login to instances, at least two, in separate terminal windows</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -A core@&lt;public-ip-address-1&gt;
+</span><span class='line'>ssh -A core@&lt;public-ip-address-2&gt;
+</span><span class='line'>ssh -A core@&lt;public-ip-address-3&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>check status of etcd service</h3>
+
+<p>Be sure to allow the instances to chat with each other on TCP ports 4001 and 7001.  At the start of the output below I hadn&rsquo;t yet edited my security group to allow that communication.  Once I made the change, one host became the leader and they added peers.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>systemctl -l status etcd.service
+</span><span class='line'>* etcd.service - etcd
+</span><span class='line'>   Loaded: loaded (/usr/lib64/systemd/system/etcd.service; static)
+</span><span class='line'>  Drop-In: /run/systemd/system/etcd.service.d
+</span><span class='line'>           └─10-oem.conf, 20-cloudinit.conf
+</span><span class='line'>   Active: active (running) since Tue 2015-01-06 21:36:55 UTC; 45s ago
+</span><span class='line'> Main PID: 781 (etcd)
+</span><span class='line'>   CGroup: /system.slice/etcd.service
+</span><span class='line'>           └─781 /usr/bin/etcd
+</span><span class='line'>
+</span><span class='line'>Jan 06 21:37:07 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:07.550 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd attempted to join via 10.0.1.251:7001 failed: fail checking join version: Client Internal Error (Get http://10.0.1.251:7001/version: dial tcp 10.0.1.251:7001: i/o timeout)
+</span><span class='line'>Jan 06 21:37:07 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:07.550 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd is unable to join the cluster using any of the peers [10.0.1.249:7001 10.0.1.251:7001] at 1th time. Retrying in 2.8 seconds
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.553 INFO      | Send Join Request to http://10.0.1.249:7001/join
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.564 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd joined the cluster via peer 10.0.1.249:7001
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.601 INFO      | etcd server [name 33edd7a8e0a844648df3f5dd2a4b6fbd, listen on :4001, advertised url http://10.0.1.250:4001]
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.602 INFO      | peer server [name 33edd7a8e0a844648df3f5dd2a4b6fbd, listen on :7001, advertised url http://10.0.1.250:7001]
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.603 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd starting in peer mode
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.603 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd: state changed from 'initialized' to 'follower'.
+</span><span class='line'>Jan 06 21:37:09 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:09.669 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd: peer added: '87b320be82a54d34851b253f61db489c'
+</span><span class='line'>Jan 06 21:37:12 ip-10-0-1-250.ec2.internal etcd[781]: [etcd] Jan  6 21:37:12.218 INFO      | 33edd7a8e0a844648df3f5dd2a4b6fbd: peer added: '50aed17347a1456e85279f8dda41e663'</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>test etcd distributed key service</h3>
+
+<p>see <a href="https://coreos.com/docs/quickstart/">https://coreos.com/docs/quickstart/</a> as these steps are basically coped from that.</p>
+
+<p>Set a key on one host</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ curl -L http://localhost:4001/v1/keys/message -d value="hello coreOS"
+</span><span class='line'>{"action":"set","key":"/message","value":"hello coreOS","newKey":true,"index":336}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Query the key from another host</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-250 ~ $ curl -L http://localhost:4001/v1/keys/message
+</span><span class='line'>{"action":"get","key":"/message","value":"hello coreOS","index":349}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>list machines and service units controlled by fleet</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl list-machines
+</span><span class='line'>MACHINE         IP              METADATA
+</span><span class='line'>33edd7a8...     10.0.1.250      -
+</span><span class='line'>50aed173...     10.0.1.251      -
+</span><span class='line'>87b320be...     10.0.1.249      -
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl list-units
+</span><span class='line'>UNIT    MACHINE ACTIVE  SUB
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl list-unit-files
+</span><span class='line'>UNIT    HASH    DSTATE  STATE   TARGET</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Good, we have some machines but no fleet controlled units yet.  Let&rsquo;s create a service.</p>
+
+<h4>Create a docker container nano-service</h4>
+
+<p>Create file ~/hello.service</p>
+
+<figure class='code'><figcaption><span>hello.service </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">My Service</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">docker.service</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">TimeoutStartSec</span><span class="o">=</span><span class="s">0</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/docker kill hello</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/docker rm hello</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/docker pull busybox</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/docker run --name hello busybox /bin/sh -c &quot;while true; do echo Hello World; sleep 1; done&quot;</span>
+</span><span class='line'><span class="na">ExecStop</span><span class="o">=</span><span class="s">/usr/bin/docker stop hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>load and start the unit</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl load hello.service
+</span><span class='line'>Unit hello.service loaded on 33edd7a8.../10.0.1.250
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl start hello.service
+</span><span class='line'>Unit hello.service launched on 33edd7a8.../10.0.1.250</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see from the output the service was loaded and installed on a host other than the one we&rsquo;re logged into.  View cluster services with fleetctl stats &lt;name.service></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl list-units
+</span><span class='line'>UNIT            MACHINE                 ACTIVE  SUB
+</span><span class='line'>hello.service   33edd7a8.../10.0.1.250  active  running
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl status hello.service
+</span><span class='line'>● hello.service - My Service
+</span><span class='line'>   Loaded: loaded (/run/fleet/units/hello.service; linked-runtime)
+</span><span class='line'>   Active: active (running) since Tue 2015-01-06 22:19:17 UTC; 1min 35s ago
+</span><span class='line'>  Process: 3872 ExecStartPre=/usr/bin/docker pull busybox (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 3860 ExecStartPre=/usr/bin/docker rm hello (code=exited, status=1/FAILURE)
+</span><span class='line'>  Process: 3796 ExecStartPre=/usr/bin/docker kill hello (code=exited, status=1/FAILURE)
+</span><span class='line'> Main PID: 3917 (docker)
+</span><span class='line'>   CGroup: /system.slice/hello.service
+</span><span class='line'>           └─3917 /usr/bin/docker run --name hello busybox /bin/sh -c while true; do echo Hello World; sleep 1; done
+</span><span class='line'>
+</span><span class='line'>Jan 06 22:20:43 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:44 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:45 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:46 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:47 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:48 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:49 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:50 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:51 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:20:52 ip-10-0-1-250.ec2.internal docker[3917]: Hello World</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that two of the ExecStatPre tasks exited with failure.  Oh my, what has happened?  Those are the docker rm and kill commands which failed because the container named hello hadn&rsquo;t been created yet.  Those commands are executed to ensure we create a new container upon service start and it&rsquo;s ok if they fail with nothing to do.</p>
+
+<p>Some container log lines are displayed also.</p>
+
+<h4>inspect docker images and containers</h4>
+
+<p>We can look on the host where our service was installed to verify it has docker image(s) and running container named hello.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ ssh  ip-10-0-1-250 docker images
+</span><span class='line'>The authenticity of host 'ip-10-0-1-250 (10.0.1.250)' can't be established.
+</span><span class='line'>ED25519 key fingerprint is 8c:2d:b0:8d:08:b5:b2:6b:54:bb:8a:49:81:fd:a1:70.
+</span><span class='line'>Are you sure you want to continue connecting (yes/no)? yes
+</span><span class='line'>Warning: Permanently added 'ip-10-0-1-250,10.0.1.250' (ED25519) to the list of known hosts.
+</span><span class='line'>
+</span><span class='line'>REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+</span><span class='line'>busybox             buildroot-2014.02   4986bf8c1536        6 days ago          2.433 MB
+</span><span class='line'>busybox             latest              4986bf8c1536        6 days ago          2.433 MB
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ ssh  ip-10-0-1-250 docker ps    
+</span><span class='line'>CONTAINER ID        IMAGE                       COMMAND                CREATED             STATUS              PORTS               NAMES
+</span><span class='line'>8c96226a4c0e        busybox:buildroot-2014.02   "/bin/sh -c 'while t   8 minutes ago       Up 8 minutes                            hello </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or, looks like we can use fleetclt to ssh to other machines.  We can use the machine id reported by fleetctl list-machines or list-units.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl list-units
+</span><span class='line'>UNIT            MACHINE                 ACTIVE  SUB
+</span><span class='line'>hello.service   33edd7a8.../10.0.1.250  active  running
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl ssh 33edd7a8 docker ps
+</span><span class='line'>CONTAINER ID        IMAGE                       COMMAND                CREATED             STATUS              PORTS               NAMES
+</span><span class='line'>8c96226a4c0e        busybox:buildroot-2014.02   "/bin/sh -c 'while t   11 minutes ago      Up 11 minutes                           hello</span></code></pre></td></tr></table></div></figure>
+
+
+<p>super cool!</p>
+
+<h4>stop hello.service</h4>
+
+<p>Stop the service.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl stop hello.service
+</span><span class='line'>Unit hello.service loaded on 33edd7a8.../10.0.1.250
+</span><span class='line'>
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl status hello.service
+</span><span class='line'>● hello.service - My Service
+</span><span class='line'>   Loaded: loaded (/run/fleet/units/hello.service; linked-runtime)
+</span><span class='line'>   Active: failed (Result: exit-code) since Tue 2015-01-06 22:42:36 UTC; 2s ago
+</span><span class='line'>  Process: 5601 ExecStop=/usr/bin/docker stop hello (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 3917 ExecStart=/usr/bin/docker run --name hello busybox /bin/sh -c while true; do echo Hello World; sleep 1; done (code=exited, status=255)
+</span><span class='line'>  Process: 3872 ExecStartPre=/usr/bin/docker pull busybox (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 3860 ExecStartPre=/usr/bin/docker rm hello (code=exited, status=1/FAILURE)
+</span><span class='line'>  Process: 3796 ExecStartPre=/usr/bin/docker kill hello (code=exited, status=1/FAILURE)
+</span><span class='line'> Main PID: 3917 (code=exited, status=255)
+</span><span class='line'>
+</span><span class='line'>Jan 06 22:42:30 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:31 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:32 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:33 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:34 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:35 ip-10-0-1-250.ec2.internal docker[3917]: Hello World
+</span><span class='line'>Jan 06 22:42:36 ip-10-0-1-250.ec2.internal docker[5601]: hello
+</span><span class='line'>Jan 06 22:42:36 ip-10-0-1-250.ec2.internal systemd[1]: hello.service: main process exited, code=exited, status=255/n/a
+</span><span class='line'>Jan 06 22:42:36 ip-10-0-1-250.ec2.internal systemd[1]: Stopped My Service.
+</span><span class='line'>Jan 06 22:42:36 ip-10-0-1-250.ec2.internal systemd[1]: Unit hello.service entered failed state.</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>restart hello.service</h4>
+
+<p>The hello.service unit is still loaded; we&rsquo;ll restart it.  This time the ExecStartPre tasks removing the previous container should succeed.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl start hello.service
+</span><span class='line'>Unit hello.service launched on 33edd7a8.../10.0.1.250
+</span><span class='line'>core@ip-10-0-1-249 ~ $ 
+</span><span class='line'>core@ip-10-0-1-249 ~ $ fleetctl status hello.service
+</span><span class='line'>● hello.service - My Service
+</span><span class='line'>   Loaded: loaded (/run/fleet/units/hello.service; linked-runtime)
+</span><span class='line'>   Active: active (running) since Tue 2015-01-06 22:43:47 UTC; 2s ago
+</span><span class='line'>  Process: 5601 ExecStop=/usr/bin/docker stop hello (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 5659 ExecStartPre=/usr/bin/docker pull busybox (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 5649 ExecStartPre=/usr/bin/docker rm hello (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 5641 ExecStartPre=/usr/bin/docker kill hello (code=exited, status=0/SUCCESS)
+</span><span class='line'> Main PID: 5670 (docker)
+</span><span class='line'>   CGroup: /system.slice/hello.service
+</span><span class='line'>           └─5670 /usr/bin/docker run --name hello busybox /bin/sh -c while true; do echo Hello World; sleep 1; done
+</span><span class='line'>
+</span><span class='line'>Jan 06 22:43:45 ip-10-0-1-250.ec2.internal systemd[1]: Starting My Service...
+</span><span class='line'>Jan 06 22:43:46 ip-10-0-1-250.ec2.internal docker[5641]: hello
+</span><span class='line'>Jan 06 22:43:46 ip-10-0-1-250.ec2.internal docker[5649]: hello
+</span><span class='line'>Jan 06 22:43:46 ip-10-0-1-250.ec2.internal docker[5659]: Pulling repository busybox
+</span><span class='line'>Jan 06 22:43:47 ip-10-0-1-250.ec2.internal docker[5659]: Status: Image is up to date for busybox:latest
+</span><span class='line'>Jan 06 22:43:47 ip-10-0-1-250.ec2.internal systemd[1]: Started My Service.
+</span><span class='line'>Jan 06 22:43:47 ip-10-0-1-250.ec2.internal docker[5670]: Hello World
+</span><span class='line'>Jan 06 22:43:48 ip-10-0-1-250.ec2.internal docker[5670]: Hello World
+</span><span class='line'>Jan 06 22:43:49 ip-10-0-1-250.ec2.internal docker[5670]: Hello World</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s the simple quickstart tour of coreOS, etcd, and mantaing services with fleet on an Amazon AWS cluster.  I think the next step is to define some more useful, multi-tiered, services.  We&rsquo;ll need to define the relationships betwen the services, configurations, etc.  Let&rsquo;s use etcd!</p>
+
+<h4>a bonus service</h4>
+
+<p>Here&rsquo;s the beginning of a private docker registry service.</p>
+
+<figure class='code'><figcaption><span>registry.service </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">core@ip-10-0-1-249</span> <span class="err">~</span> <span class="err">$</span> <span class="err">cat</span> <span class="err">registry.service</span>
+</span><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">My Registry Service</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">docker.service</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">TimeoutStartSec</span><span class="o">=</span><span class="s">0</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/docker kill registry</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/docker rm registry</span>
+</span><span class='line'><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/docker pull registry</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/docker run --name registry registry /bin/sh -c &quot;while true; do echo Hello Registry; sleep 1; done&quot;</span>
+</span><span class='line'><span class="na">ExecStop</span><span class="o">=</span><span class="s">/usr/bin/docker stop registry</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Docker Websocket Chat Sample]]></title>
