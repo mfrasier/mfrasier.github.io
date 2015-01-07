@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Cloud | Blog about things]]></title>
   <link href="http://mfrasier.github.io/blog/categories/cloud/atom.xml" rel="self"/>
   <link href="http://mfrasier.github.io/"/>
-  <updated>2015-01-07T08:19:09-05:00</updated>
+  <updated>2015-01-07T14:18:35-05:00</updated>
   <id>http://mfrasier.github.io/</id>
   <author>
     <name><![CDATA[Marty Frasier]]></name>
@@ -20,7 +20,7 @@
     <id>http://mfrasier.github.io/blog/2015/01/06/kicking-the-tires-of-coreos</id>
     <content type="html"><![CDATA[<p>I&rsquo;m going to try out <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
 
-<p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
+<p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management and service discovery; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
 
 <p>First, let&rsquo;s create a CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.  I also updated the AMI for us-east-1, where I&rsquo;m deploying this cluster, to the most recent stable version of CoreOS.</p>
 
@@ -387,6 +387,85 @@
    --cli-input-json file://aws-cfn-cli-skeleton.json \
    --template-body file://coreos-cloudformation-template.json
 </code></pre>
+
+<p>We can use the usual AWS tools to verify our new stack and instances are running.<br/>
+We can also verify our cluster members are registered with the free cluster registery we&rsquo;re using here. It will return the cluster member nodes that have registered.</p>
+
+<p>For example: <code>curl <a href="https://discovery.etcd.io/87a8b544cf5hhf7436d601273c1d22d8">https://discovery.etcd.io/87a8b544cf5hhf7436d601273c1d22d8</a></code> might return something like this:</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">&amp;ldquo;action&amp;rdquo;:</span> <span class="err">&amp;ldquo;get&amp;rdquo;,</span>
+</span><span class='line'>  <span class="err">&amp;ldquo;node&amp;rdquo;:</span> <span class="err">{</span>
+</span><span class='line'>    <span class="err">&amp;ldquo;key&amp;rdquo;:</span> <span class="err">&amp;ldquo;\/&lt;em&gt;etcd\/registry\/f38f46b1a47b6cb10e1ceec59c7a3b74&amp;rdquo;,</span>
+</span><span class='line'>    <span class="err">&amp;ldquo;dir&amp;rdquo;:</span> <span class="err">true,</span>
+</span><span class='line'>    <span class="err">&amp;ldquo;nodes&amp;rdquo;:</span> <span class="err">[</span>
+</span><span class='line'>      <span class="err">{</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;key&amp;rdquo;:</span> <span class="err">&amp;ldquo;\/&lt;/em&gt;etcd\/registry\/f38f46b1a47b6cb10e1ceec59c7a3b74\/de37e1c31c034971a3c7d08dc1067c2e&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;value&amp;rdquo;:</span> <span class="err">&amp;ldquo;&lt;a</span> <span class="err">href=</span><span class="nt">&quot;http://10.0.1.114:7001&quot;</span><span class="err">&gt;http</span><span class="p">:</span><span class="err">//</span><span class="mf">10.0</span><span class="err">.</span><span class="mf">1.114</span><span class="p">:</span><span class="mi">7001</span><span class="err">&lt;/a&gt;&amp;rdquo;</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;expiration&amp;rdquo;:</span> <span class="err">&amp;ldquo;2015-01-14T18:56:05.739262331Z&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;ttl&amp;rdquo;:</span> <span class="err">604160,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;modifiedIndex&amp;rdquo;:</span> <span class="err">272416204,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;createdIndex&amp;rdquo;:</span> <span class="err">272416204</span>
+</span><span class='line'>      <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;key&amp;rdquo;:</span> <span class="err">&amp;ldquo;\/&lt;em&gt;etcd\/registry\/f38f46b1a47b6cb10e1ceec59c7a3b74\/c5c43f7f35a44eb2a67144bbca5f1477&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;value&amp;rdquo;:</span> <span class="err">&amp;ldquo;&lt;a</span> <span class="err">href=</span><span class="nt">&quot;http://10.0.1.113:7001&quot;</span><span class="err">&gt;http</span><span class="p">:</span><span class="err">//</span><span class="mf">10.0</span><span class="err">.</span><span class="mf">1.113</span><span class="p">:</span><span class="mi">7001</span><span class="err">&lt;/a&gt;&amp;rdquo;</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;expiration&amp;rdquo;:</span> <span class="err">&amp;ldquo;2015-01-14T18:57:54.178397919Z&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;ttl&amp;rdquo;:</span> <span class="err">604269,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;modifiedIndex&amp;rdquo;:</span> <span class="err">272416335,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;createdIndex&amp;rdquo;:</span> <span class="err">272416335</span>
+</span><span class='line'>      <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;key&amp;rdquo;:</span> <span class="err">&amp;ldquo;\/&lt;/em&gt;etcd\/registry\/f38f46b1a47b6cb10e1ceec59c7a3b74\/dfdaa3cf76504463bbc8e903905a227e&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;value&amp;rdquo;:</span> <span class="err">&amp;ldquo;&lt;a</span> <span class="err">href=</span><span class="nt">&quot;http://10.0.1.112:7001&quot;</span><span class="err">&gt;http</span><span class="p">:</span><span class="err">//</span><span class="mf">10.0</span><span class="err">.</span><span class="mf">1.112</span><span class="p">:</span><span class="mi">7001</span><span class="err">&lt;/a&gt;&amp;rdquo;</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;expiration&amp;rdquo;:</span> <span class="err">&amp;ldquo;2015-01-14T18:57:56.195430344Z&amp;rdquo;,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;ttl&amp;rdquo;:</span> <span class="err">604271,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;modifiedIndex&amp;rdquo;:</span> <span class="err">272416369,</span>
+</span><span class='line'>        <span class="err">&amp;ldquo;createdIndex&amp;rdquo;:</span> <span class="err">272416369</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="err">],</span>
+</span><span class='line'>    <span class="err">&amp;ldquo;modifiedIndex&amp;rdquo;:</span> <span class="mi">272410125</span><span class="err">,</span>
+</span><span class='line'>    <span class="err">&amp;ldquo;createdIndex&amp;rdquo;:</span> <span class="mi">272410125</span>
+</span><span class='line'>  <span class="err">}</span>
+</span><span class='line'><span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Sweet. I presume we may prefer our own cluster discovery service at some point.  It&rsquo;s just an etcd service.</p>
 
 <h3>interact with stack instances</h3>
 

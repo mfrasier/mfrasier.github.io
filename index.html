@@ -89,7 +89,7 @@
 
   <div class="entry-content"><p>I&rsquo;m going to try out <a href="http://coreos.com">CoreOS</a> to create a cluster of machines to host an app consisting of docker containers.</p>
 
-<p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
+<p>CoreOS is a linux distribution designed to run clusters of containers efficiently and securely.  Our application components run in <a href="http://www.docker.com">Docker</a> containers, organized as services.  The distribution also includes etcd, a key/value store for distributed configuration management and service discovery; and fleet to manage services across clusters.  The machines can be automatically updated with any security fixes and patches.</p>
 
 <p>First, let&rsquo;s create a CloudFormation template we will use to create our stack.  I got a minimal template for CoreOS <a href="https://github.com/xueshanf/coreos-aws-cloudformation/blob/master/aws/cloudformation-template.json">here</a>, adding parameters for VPC subnets and related availability zones.  I also updated the AMI for us-east-1, where I&rsquo;m deploying this cluster, to the most recent stable version of CoreOS.</p>
 
